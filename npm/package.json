@@ -1,0 +1,68 @@
+{
+  "name": "@foundry-rs/forge",
+  "type": "module",
+  "version": "1.1.1",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#*": "./src/*"
+  },
+  "bin": {
+    "forge": "./dist/bin/forge.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsup --config=tsup.config.ts",
+    "format": "biome format . --write",
+    "lint": "biome lint . --write --unsafe",
+    "check": "biome check . --write --unsafe",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "check-package": "bun x publint@latest --strict && attw --pack --ignore-rules cjs-resolves-to-esm"
+  },
+  "devDependencies": {
+    "@ai-sdk/anthropic": "^1.1.15",
+    "@ai-sdk/openai": "^1.2.1",
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "^1.2.4",
+    "@types/node": "^22.13.10",
+    "ai": "^4.1.54",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "directory": "npm",
+    "url": "git+https://github.com/foundry-rs/foundry.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/foundry-rs/foundry/blob/main/LICENSE"
+    },
+    {
+      "type": "Apache-2.0",
+      "url": "https://github.com/foundry-rs/foundry/blob/main/LICENSE-APACHE"
+    }
+  ]
+}

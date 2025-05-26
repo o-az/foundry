@@ -1,0 +1,68 @@
+name: docker
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  schedule:
+    - cron: "0 0 * * *"
+  # Trigger without any parameters a proactive rebuild
+  workflow_dispatch: {}
+  workflow_call:
+
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
+jobs:
+  build:
+    name: bundle and publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Download forge binary
+        uses: actions/download-artifact@v4
+        with:
+          name: forge
+          path: forge
+
+      - run: |
+          chmod +x forge
+          ./forge --version
+
+      - name: Install dependencies
+        working-directory: ./npm
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        working-directory: ./npm
+        run: bun run build
+
+      - name: Copy over forge binary
+        working-directory: ./npm
+        run: |
+          cp forge ${{ github.workspace }}/dist/forge
+
+      - name: Publish
+        working-directory: ./npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NPM_CONFIG_TOKEN='${{ secrets.GITHUB_TOKEN }}' bun publish \
+            --access='public' \
+            --no-git-tags \
+            --allow-same-version
+
+
